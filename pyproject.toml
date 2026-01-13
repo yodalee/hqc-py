@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hqc_py"
+version = "0.1.0"
+description = "A Python package for HQC."
+authors = [
+    { name = "Yodalee", email = "lc85301@gmail.com" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "LICENSE" }
+dependencies = [
+    "bitarray==3.8.0"
+]
