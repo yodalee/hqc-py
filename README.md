@@ -1,6 +1,10 @@
 hqc-py
 ======
 
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+[![GitHub CI](https://github.com/yodalee/hqc-py/actions/workflows/python-ci.yml/badge.svg?branch=main)](https://github.com/yodalee/hqc-py/actions/workflows/python-ci.yml)
+
+
 A pure python implementation of Hamming Quasi-Cyclic (future FIPS 207)
 
 > [!CAUTION]
