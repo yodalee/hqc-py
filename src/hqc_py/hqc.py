@@ -1,3 +1,6 @@
+import hashlib
+from .shake_wrapper import ShakeWrapper
+
 class Hqc:
     def __init__(self, parameter_set):
         self.n1 = parameter_set["n1"]
@@ -6,6 +9,32 @@ class Hqc:
         self.k = parameter_set["k"]
         self.w = parameter_set["w"]
         self.we = parameter_set["we"]
+
+        self.domain_sep = {'G': b'\x00', 'H': b'\x01', 'I': b'\x02', 'J': b'\x03'}
+
+    def hash_g(self, input_data: bytes) -> bytes:
+        """
+        Hash function G: SHA3_512 with domain separation G
+        """
+        return hashlib.sha3_512(input_data + self.domain_sep['G']).digest()
+
+    def hash_h(self, input_data: bytes) -> bytes:
+        """
+        Hash function H: SHA3_512 with domain separation H
+        """
+        return hashlib.sha3_512(input_data + self.domain_sep['H']).digest()
+
+    def hash_i(self, input_data: bytes) -> bytes:
+        """
+        Hash function I: SHA3_256 with domain separation I
+        """
+        return hashlib.sha3_256(input_data + self.domain_sep['I']).digest()
+
+    def hash_j(self, input_data: bytes) -> bytes:
+        """
+        Hash function J: SHA3_256 with domain separation J
+        """
+        return hashlib.sha3_256(input_data + self.domain_sep['J']).digest()
 
     def keygen(self, seed: bytes) -> tuple[bytes, bytes]:
         """
