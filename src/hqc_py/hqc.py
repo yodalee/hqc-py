@@ -36,7 +36,32 @@ class Hqc:
         """
         return hashlib.sha3_256(input_data + self.domain_sep['J']).digest()
 
-    def keygen(self, seed: bytes) -> tuple[bytes, bytes]:
+    def pke_keygen(self, seed: bytes) -> tuple[bytes, bytes]:
+        """
+        Generate a public/secret key pair from a seed.
+        Returns (pk, sk) as (bytes, bytes).
+        """
+        pk = b''
+        sk = b''
+        return pk, sk
+
+    def pke_encrypt(self, pk: bytes, message: bytes, seed: bytes) -> bytes:
+        """
+        Encrypt a message using the public key and a seed.
+        Returns ciphertext as bytes.
+        """
+        ct = b''
+        return ct
+
+    def pke_decrypt(self, sk: bytes, ct: bytes) -> bytes:
+        """
+        Decrypt a ciphertext using the secret key.
+        Returns message as bytes.
+        """
+        message = b''
+        return message
+
+    def kem_keygen(self, seed: bytes) -> tuple[bytes, bytes]:
         """
         Generate a public/secret key pair from a seed.
         Returns (pk, sk) as (bytes, bytes).
@@ -46,7 +71,7 @@ class Hqc:
         sk = b''  # placeholder
         return pk, sk
 
-    def encaps(self, sk: bytes) -> tuple[bytes, bytes]:
+    def kem_encaps(self, sk: bytes) -> tuple[bytes, bytes]:
         """
         Encapsulate using the secret key.
         Returns (ct, ss) as (bytes, bytes).
@@ -56,7 +81,7 @@ class Hqc:
         ss = b''  # placeholder
         return ct, ss
 
-    def decaps(self, sk: bytes, ct: bytes) -> bytes:
+    def kem_decaps(self, sk: bytes, ct: bytes) -> bytes:
         """
         Decapsulate using the secret key and ciphertext.
         Returns ss as bytes.

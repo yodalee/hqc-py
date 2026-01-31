@@ -42,15 +42,18 @@ class TestHqc_KAT(unittest.TestCase):
 
     def generic_keygen_kat(self, Hqc, index):
         kat_file = self.file_map[index]
-        vectors = parse_rsp_file("assets/PQCkemKAT_2321.rsp")
+        vectors = parse_rsp_file(kat_file)
+        self.skipTest("Not implemented yet")
 
     def generic_encap_kat(self, Hqc, index):
         kat_file = self.file_map[index]
-        vectors = parse_rsp_file("assets/PQCkemKAT_2321.rsp")
+        vectors = parse_rsp_file(kat_file)
+        self.skipTest("Not implemented yet")
 
     def generic_decap_kat(self, Hqc, index):
         kat_file = self.file_map[index]
-        vectors = parse_rsp_file("assets/PQCkemKAT_2321.rsp")
+        vectors = parse_rsp_file(kat_file)
+        self.skipTest("Not implemented yet")
 
     def test_Hqc_1_keygen(self):
         self.generic_keygen_kat(Hqc1, 0)
