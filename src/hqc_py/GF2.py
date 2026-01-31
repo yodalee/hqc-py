@@ -4,6 +4,18 @@ class GF2:
         self.size = size
         self.bits = bits
 
+    @classmethod
+    def frombytes(cls, size: int, b: bytes):
+        val = int.from_bytes(b, 'little')
+        bits = val & ((1 << size) - 1)
+        return cls(size, bits)
+
+    def __str__(self):
+        return self.bits.bin()[2:].zfill(self.size)
+
+    def __bytes__(self):
+        return self.bits.to_bytes((self.size + 7) // 8, 'little')
+
     def __repr__(self):
         return f"GF2({self.bits.bin()[2:]})"
 
@@ -36,6 +48,15 @@ class GF2:
         if not isinstance(other, GF2) or self.size != other.size:
             raise ValueError("Incompatible types for equality check")
         return self.bits == other.bits
+
+    def at(self, index: int) -> bool:
+        return (self.bits >> index) & 1 == 1
+
+    def set(self, index: int, val: bool):
+        if val:
+            self.bits |= (1 << index)
+        else:
+            self.bits &= ~(1 << index)
 
     def tolist(self) -> list[int]:
         l = []

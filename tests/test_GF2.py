@@ -30,3 +30,8 @@ class TestGF2(unittest.TestCase):
     def test_tolist(self):
         a = GF2(4, 0b1010)
         self.assertEqual(a.tolist(), [1, 3])
+
+    def test_bytes(self):
+        a = GF2.frombytes(4, b'\xAA')
+        self.assertEqual(a.bits, 0xa)
+        self.assertEqual(bytes(a), b'\x0a')
