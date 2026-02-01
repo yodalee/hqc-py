@@ -47,7 +47,6 @@ class TestHqc_KAT(unittest.TestCase):
     def generic_keygen_kat(self, Hqc, index):
         kat_file = self.file_map[index]
         vectors = parse_rsp_file(kat_file)
-        self.skipTest("Wrong answer")
         for dict in vectors:
             count = dict['count']
             seed = dict['seed']
