@@ -19,7 +19,6 @@ class TestHqc_sample_vect(unittest.TestCase):
         self.assertSetEqual(set(result.tolist()), expected)
 
     def test_hqc1_sample_fixed_weight2(self):
-        self.skipTest("sample_fixed_weight_vect2 not yet implemented in Hqc1")
         seed = bytes.fromhex("3b7386bcc293218cf12ee3ad0fa5d48efcfca271f9881acec736766d6431ccd2")
         xof = hqc_xof(seed)
 
@@ -57,7 +56,6 @@ class TestHqc_sample_vect(unittest.TestCase):
         self.assertSetEqual(set(result.tolist()), expected)
 
     def test_hqc3_sample_fixed_weight2(self):
-        self.skipTest("sample_fixed_weight_vect2 not yet implemented in Hqc3")
         seed = bytes.fromhex("15471697e1645447a8eed235872e6b5ecdf39ae8e13af8301535613ff6e957e3")
         xof = hqc_xof(seed)
 
@@ -95,7 +93,6 @@ class TestHqc_sample_vect(unittest.TestCase):
         self.assertSetEqual(set(result.tolist()), expected)
 
     def test_hqc5_sample_fixed_weight2(self):
-        self.skipTest("sample_fixed_weight_vect2 not yet implemented in Hqc5")
         seed = bytes.fromhex("4b7b9fca4b486b02c555a67b8e51582b5829a2a8b86d6d35add1b8c699096619")
         xof = hqc_xof(seed)
 
