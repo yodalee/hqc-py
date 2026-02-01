@@ -42,7 +42,7 @@ class Hqc:
         """
         return hashlib.sha3_256(input_data + self.domain_sep['J']).digest()
 
-    def sample_fixed_weight_vect(self, xof: ShakeWrapper) -> GF2:
+    def sample_fixed_weight_vect1(self, xof: ShakeWrapper) -> GF2:
         """
         Sample a vector of fixed weight self.w over GF(2) of length self.n.
         """
@@ -75,6 +75,31 @@ class Hqc:
             i += 1
         return result
 
+    def sample_fixed_weight_vect2(self, xof: ShakeWrapper) -> GF2:
+        """
+        Sample a vector of fixed weight self.we over GF(2) of length self.n.
+        """
+        # constant
+        len_bytes = 4 * self.we
+        len_squeeze = align_up(len_bytes, 8)
+
+        # initialize buffer and result GF2
+        buf = xof.read(len_squeeze)
+        result = GF2(self.n, 0)
+
+        values = []
+        for i in range(self.we):
+            # generate value
+            u32 = int.from_bytes(buf[4*i:4*i+4], 'little')
+            val = i + ((u32 * (self.n - i)) >> 32)
+            values.append(val)
+
+        for i in range(self.we-1, -1, -1):
+            # deduplicate values, replace with 0-w-1
+            idx = i if result.at(values[i]) else values[i]
+            result.set(idx, True)
+        return result
+
     def sample_vect(self, xof: ShakeWrapper) -> GF2:
         buflen = align_up(self.n, 8)
         buf = xof.read(buflen)
@@ -92,8 +117,8 @@ class Hqc:
 
         # Compute decryption key dkpke
         xof = hqc_xof(dkpke)
-        y = self.sample_fixed_weight_vect(xof)
-        x = self.sample_fixed_weight_vect(xof)
+        y = self.sample_fixed_weight_vect1(xof)
+        x = self.sample_fixed_weight_vect1(xof)
 
         # Compute encryption key ekpke
         xof = hqc_xof(seed_ek)
