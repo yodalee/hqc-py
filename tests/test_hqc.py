@@ -1,5 +1,6 @@
 import unittest
 from hqc_py import Hqc1, Hqc3, Hqc5
+from hqc_py.shake_wrapper import hqc_prng
 
 import re
 from typing import List, Dict
@@ -48,12 +49,17 @@ class TestHqc_KAT(unittest.TestCase):
         vectors = parse_rsp_file(kat_file)
         self.skipTest("Wrong answer")
         for dict in vectors:
+            count = dict['count']
             seed = dict['seed']
             expected_pk = dict['pk']
             expected_sk = dict['sk']
-            pk, sk = Hqc.kem_keygen(seed)
-            self.assertEqual(pk, expected_pk)
-            self.assertEqual(sk, expected_sk)
+
+            # Generate kem_seed with prng, then run keypair
+            prng = hqc_prng(seed)
+            seed_kem = prng.read(Hqc.len_seed)
+            pk, sk = Hqc.kem_keygen(seed_kem)
+            self.assertEqual(pk, expected_pk, f"Failed pk for count {dict['count']}")
+            self.assertEqual(sk, expected_sk, f"Failed sk for count {dict['count']}")
 
     def generic_encap_kat(self, Hqc, index):
         kat_file = self.file_map[index]

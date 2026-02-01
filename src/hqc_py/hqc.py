@@ -45,24 +45,33 @@ class Hqc:
         """
         Sample a vector of fixed weight self.w over GF(2) of length self.n.
         """
-        buflen = 3 * self.w
-        blocklen = align_up(buflen, 8)
-        buf = xof.read(blocklen)
-        pos = 0
+        # constant
+        reject_threshold = ((1 << 24) // self.n) * self.n
+        len_bytes = 3 * self.w
+        len_squeeze = align_up(len_bytes, 8)
+
+        # initialize buffer and result GF2
+        buf = xof.read(len_squeeze)
         result = GF2(self.n, 0)
+
+        pos = 0
         i = 0
         while i < self.w:
-            if pos == buflen:
+            if pos == len_bytes:
                 # consume up a block, request another block
-                buf = xof.read(blocklen)
+                buf = xof.read(len_squeeze)
                 pos = 0
 
-            val = int.from_bytes(buf[pos:pos+3], 'little') % self.n
+            val = int.from_bytes(buf[pos:pos+3], 'big')
             pos += 3
 
-            if not result.at(val):
-                result.set(val, True)
-                i += 1
+            if val >= reject_threshold:
+                continue
+            val = val % self.n
+            if result.at(val):
+                continue
+            result.set(val, True)
+            i += 1
         return result
 
     def sample_vect(self, xof: ShakeWrapper) -> GF2:
@@ -117,7 +126,7 @@ class Hqc:
         # Compute seedPKE and randomness σ
         xof = hqc_xof(seed_kem)
         seed_pke = xof.read(self.len_seed)
-        sigma = xof.read(self.k)
+        sigma = xof.read(16)
 
         #Compute HQC-PKE keypair
         ek_pke, dk_pke = self.pke_keygen(seed_pke)
