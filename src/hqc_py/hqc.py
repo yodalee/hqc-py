@@ -42,7 +42,7 @@ class Hqc:
         """
         return hashlib.sha3_256(input_data + self.domain_sep['J']).digest()
 
-    def sample_fixed_weight_vect(self, xof: ShakeWrapper) -> GF2:
+    def sample_fixed_weight_vect1(self, xof: ShakeWrapper) -> GF2:
         """
         Sample a vector of fixed weight self.w over GF(2) of length self.n.
         """
@@ -92,8 +92,8 @@ class Hqc:
 
         # Compute decryption key dkpke
         xof = hqc_xof(dkpke)
-        y = self.sample_fixed_weight_vect(xof)
-        x = self.sample_fixed_weight_vect(xof)
+        y = self.sample_fixed_weight_vect1(xof)
+        x = self.sample_fixed_weight_vect1(xof)
 
         # Compute encryption key ekpke
         xof = hqc_xof(seed_ek)
