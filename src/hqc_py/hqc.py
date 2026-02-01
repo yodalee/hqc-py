@@ -25,15 +25,15 @@ class Hqc:
 
     def hash_h(self, input_data: bytes) -> bytes:
         """
-        Hash function H: SHA3_512 with domain separation H
+        Hash function H: SHA3_256 with domain separation H
         """
-        return hashlib.sha3_512(input_data + self.domain_sep['H']).digest()
+        return hashlib.sha3_256(input_data + self.domain_sep['H']).digest()
 
     def hash_i(self, input_data: bytes) -> bytes:
         """
-        Hash function I: SHA3_256 with domain separation I
+        Hash function I: SHA3_512 with domain separation I
         """
-        return hashlib.sha3_256(input_data + self.domain_sep['I']).digest()
+        return hashlib.sha3_512(input_data + self.domain_sep['I']).digest()
 
     def hash_j(self, input_data: bytes) -> bytes:
         """

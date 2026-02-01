@@ -14,12 +14,14 @@ class TestHQC_hash(unittest.TestCase):
     def test_hash_h(self):
         result = Hqc1.hash_h(bytes.fromhex('000102030405060708090a0b0c0d0e0f'))
         expected = bytes.fromhex(
-            '987a9575aa1a7650cb6f99cafb0cccba49b0d0d55ee8c52b6597e8b77157e11d19a504fbc38873144c9def33c95b93eddfd5a2d8f51122cdbaea77e7effe0386')
+            '464c3d3551df28d44c76a6a88593473c5628c5a4d6b776ef02d3b7bce762037d')
         self.assertEqual(result, expected)
 
     def test_hash_i(self):
         result = Hqc1.hash_i(bytes.fromhex('000102030405060708090a0b0c0d0e0f'))
-        expected = bytes.fromhex('99b2f7fc9157a1228e1d814fff40ce1c5069332991eb90e693edfae88fa61997')
+        expected = bytes.fromhex('' \
+            'ad4466f97852f8cf77ae37cb38770f2dfd66e953d3305bc399ce5a5a0f87a591' \
+            'c6a9da4f4327c493f5d8987c169b08c998c636d9948c2de73cd35b6b09d96562')
         self.assertEqual(result, expected)
 
     def test_hash_j(self):
