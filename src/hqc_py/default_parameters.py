@@ -9,6 +9,7 @@ DEFAULT_PARAMETERS = {
 		"k": 128,
 		"w": 66,
 		"we": 75,
+        "len_sigma": 16,
 	},
 	"HQC-3": {
 		"n1": 56,
@@ -17,6 +18,7 @@ DEFAULT_PARAMETERS = {
 		"k": 192,
 		"w": 100,
 		"we": 114,
+        "len_sigma": 24,
 	},
 	"HQC-5": {
 		"n1": 90,
@@ -25,6 +27,7 @@ DEFAULT_PARAMETERS = {
 		"k": 256,
 		"w": 131,
 		"we": 149,
+        "len_sigma": 32,
 	},
 }
 
