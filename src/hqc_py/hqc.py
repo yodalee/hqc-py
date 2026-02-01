@@ -13,6 +13,7 @@ class Hqc:
         self.k = parameter_set["k"]
         self.w = parameter_set["w"]
         self.we = parameter_set["we"]
+        self.len_sigma = parameter_set["len_sigma"]
 
         self.len_seed = 32
         self.domain_sep = {'G': b'\x00', 'H': b'\x01', 'I': b'\x02', 'J': b'\x03'}
@@ -126,7 +127,7 @@ class Hqc:
         # Compute seedPKE and randomness σ
         xof = hqc_xof(seed_kem)
         seed_pke = xof.read(self.len_seed)
-        sigma = xof.read(16)
+        sigma = xof.read(self.len_sigma)
 
         #Compute HQC-PKE keypair
         ek_pke, dk_pke = self.pke_keygen(seed_pke)
