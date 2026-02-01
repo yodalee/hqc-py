@@ -2,7 +2,6 @@ import unittest
 from hqc_py import Hqc1, Hqc3, Hqc5
 from hqc_py.shake_wrapper import hqc_prng
 
-import re
 from typing import List, Dict
 
 def parse_rsp_file(filepath: str) -> List[Dict[str, bytes]]:

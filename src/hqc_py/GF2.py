@@ -59,15 +59,15 @@ class GF2:
             self.bits &= ~(1 << index)
 
     def tolist(self) -> list[int]:
-        l = []
+        indexes = []
         idx = 0
         bits = self.bits
         while bits != 0:
             if bits & 1 == 1:
-                l.append(idx)
+                indexes.append(idx)
             bits >>= 1
             idx += 1
-        return l
+        return indexes
 
     def fromlist(self, xs: list[int]):
         for offset in xs:

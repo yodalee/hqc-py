@@ -3,7 +3,8 @@ import math
 from .shake_wrapper import hqc_xof, ShakeWrapper
 from .GF2 import GF2
 
-align_up = lambda x, align: align * math.ceil(x / align)
+def align_up(x: int, align: int) -> int:
+     return align * math.ceil(x / align)
 
 class Hqc:
     def __init__(self, parameter_set):
