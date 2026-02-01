@@ -75,6 +75,11 @@ class Hqc:
             i += 1
         return result
 
+    def sample_fixed_weight_vect2(self, xof: ShakeWrapper) -> GF2:
+        """
+        Sample a vector of fixed weight self.w over GF(2) of length self.n.
+        """
+
     def sample_vect(self, xof: ShakeWrapper) -> GF2:
         buflen = align_up(self.n, 8)
         buf = xof.read(buflen)
