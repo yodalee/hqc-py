@@ -94,9 +94,37 @@ class ReedSolomon:
             poly.append(1)
         return poly
 
-    def encode(self, data):
-        # Implement the encoding logic here
-        pass
+    def encode(self, msg: bytes) -> bytes:
+        """
+        Encodes a message of PARAM_K bits to a Reed-Solomon codeword of PARAM_N1 bytes.
+
+        Following Lin and Costello (Chapter 4 - Cyclic Codes),
+        we perform a systematic encoding using a linear (PARAM_N1 - PARAM_K)-stage shift
+        register with feedback connections based on the generator polynomial
+        PARAM_RS_POLY of the Reed-Solomon code.
+
+        Args:
+            msg: byte array of the message
+
+        Returns:
+            cdw: encoded message as a byte array
+        """
+        assert len(msg) == self.k, f"Message length must be {self.k} bytes"
+        # initialize the codeword buffer
+        cdw = [GF2m(0)] * (self.n - self.k)
+
+        for byte in msg[::-1]:  # Process each message byte in descending order
+            gate_value = GF2m(byte) + cdw[-1]
+            # multiply gate_value with the generator polynomial
+            subtract = list(map(
+                lambda x: gate_value * GF2m(x),
+                self.generator_polynomial
+            ))
+            cdw = [subtract[0]] + [ci + si for ci, si in zip(
+                cdw[:-1], subtract[1:])]
+
+        return bytes(cdw) + msg
+
 
     def decode(self, encoded_data):
         # Implement the decoding logic here
