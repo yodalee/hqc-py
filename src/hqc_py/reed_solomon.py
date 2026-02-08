@@ -38,8 +38,11 @@ class ReedSolomon:
     ]
 
     def __init__(self, n, k, generator_polynomial):
+        if n < k:
+            raise ValueError("n must be greater than or equal to k")
         self.n = n
         self.k = k
+        self.g = n - k + 1
         self.generator_polynomial = generator_polynomial
 
     def compute_gf_exp(self) -> List[GF2m]:
@@ -64,6 +67,32 @@ class ReedSolomon:
             gf_log[int(alpha)] = i
             alpha = alpha * GF2m(2)
         return gf_log
+
+    def compute_generator_polynomial(self) -> List[int]:
+        """
+        Computes the generator polynomial of the primitive Reed-Solomon code with given parameters.
+
+        Code length is 2^m-1.
+        The alpha is 2, the generator polynommial is:
+         g(x) = (x + alpha^1)(x + alpha^2)...(x + alpha^g)
+
+        Returns:
+            poly: List of size self.g with coefficients of the generator polynomial
+        """
+        # initialize the polynomial to 1
+        poly = [1]
+
+        for i in range(1, self.g):
+            # loop to multiply (x + 2^i) with the current polynomial
+            # The new jth coefficient is computed as:
+            # poly[j] = 1 * poly[j-1] + 2^i * poly[j]
+            for j in range(i-1, 0, -1):
+                poly[j] = (self.gf_exp[(self.gf_log[poly[j]] + i) % 255] ^ poly[j - 1])
+            # Constant term are multiply by 2^i
+            poly[0] = self.gf_exp[(self.gf_log[poly[0]] + i) % 255]
+            # The highest degree coefficient is always 1
+            poly.append(1)
+        return poly
 
     def encode(self, data):
         # Implement the encoding logic here
