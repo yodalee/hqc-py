@@ -17,6 +17,9 @@ class GF2m:
     def __repr__(self):
         return f"GF2m({bin(self.bits)[2:]})"
 
+    def __int__(self):
+        return self.bits
+
     def reduce(self, n: int):
         """
         Reduce a polynomial modulo 0x11D in GF(2^8).
