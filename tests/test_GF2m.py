@@ -20,3 +20,9 @@ class TestGF2m(unittest.TestCase):
         for b, g in zip(bs, gs):
             c = GF2m(a) * GF2m(b)
             self.assertEqual(c.bits, g)
+
+    def test_gfadd(self):
+        a = GF2m(0b1010)
+        b = GF2m(0b1100)
+        c = a + b
+        self.assertEqual(c.bits, 0b0110)

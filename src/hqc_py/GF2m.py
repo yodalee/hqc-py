@@ -70,3 +70,24 @@ class GF2m:
             b >>= 1
 
         return GF2m(self.reduce(result))
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __add__(self, other):
+        """
+        Add two elements in GF(2^m).
+
+        Args:
+            other (GF2m): Another element of GF(2^m) to multiply with.
+        Raises:
+            ValueError: If the types or field sizes are incompatible.
+        Returns:
+            GF2m: The product of the two elements in GF(2^m).
+        """
+        if not isinstance(other, GF2m):
+            raise ValueError("Incompatible types for addition")
+        return GF2m(self.bits ^ other.bits)
+
+    def __radd__(self, other):
+        return self.__add__(other)
