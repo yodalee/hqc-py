@@ -9,6 +9,7 @@ DEFAULT_PARAMETERS = {
 		"k": 16,
 		"w": 66,
 		"we": 75,
+        "n_repeat": 3,
         "len_sigma": 16,
         "generator_polynomial": [
             89,  69, 153, 116, 176, 117, 111, 75,  73, 233,
@@ -24,6 +25,7 @@ DEFAULT_PARAMETERS = {
 		"k": 24,
 		"w": 100,
 		"we": 114,
+        "n_repeat": 5,
         "len_sigma": 24,
         "generator_polynomial": [
             45, 216, 239, 24, 253, 104, 27, 40, 107, 50,
@@ -39,6 +41,7 @@ DEFAULT_PARAMETERS = {
 		"k": 32,
 		"w": 131,
 		"we": 149,
+        "n_repeat": 5,
         "len_sigma": 32,
         "generator_polynomial": [
             49, 167, 49, 39, 200, 121, 124, 91, 240, 63,
