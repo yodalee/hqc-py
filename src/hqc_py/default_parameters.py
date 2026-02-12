@@ -10,7 +10,7 @@ DEFAULT_PARAMETERS = {
 		"w": 66,
 		"we": 75,
         "n_repeat": 3,
-        "len_sigma": 16,
+        "len_security_bytes": 16,
         "generator_polynomial": [
             89,  69, 153, 116, 176, 117, 111, 75,  73, 233,
             242, 233, 65,  210, 21, 139, 103, 173, 67, 118,
@@ -26,7 +26,7 @@ DEFAULT_PARAMETERS = {
 		"w": 100,
 		"we": 114,
         "n_repeat": 5,
-        "len_sigma": 24,
+        "len_security_bytes": 24,
         "generator_polynomial": [
             45, 216, 239, 24, 253, 104, 27, 40, 107, 50,
             163, 210, 227, 134, 224, 158, 119, 13, 158,
@@ -42,7 +42,7 @@ DEFAULT_PARAMETERS = {
 		"w": 131,
 		"we": 149,
         "n_repeat": 5,
-        "len_sigma": 32,
+        "len_security_bytes": 32,
         "generator_polynomial": [
             49, 167, 49, 39, 200, 121, 124, 91, 240, 63,
             148, 71, 150, 123, 87, 101, 32, 215, 159, 71,
