@@ -63,7 +63,21 @@ class TestHqc_KAT(unittest.TestCase):
     def generic_encap_kat(self, Hqc, index):
         kat_file = self.file_map[index]
         vectors = parse_rsp_file(kat_file)
-        self.skipTest("Not implemented yet")
+        for dict in vectors:
+            count = dict['count']
+            seed = dict['seed']
+            pk = dict['pk']
+            expected_ct = dict['ct']
+            expected_ss = dict['ss']
+
+            # Generate m and salt with prng
+            prng = hqc_prng(seed)
+            prng.read(Hqc.len_seed) # skip the first len_seed that should be used in keygen
+            m = prng.read(Hqc.len_security_bytes)
+            salt = prng.read(Hqc.len_salt)
+            ct, ss = Hqc.kem_encaps(pk, m, salt)
+            self.assertEqual(ct, expected_ct, f"Failed ct for count {dict['count']}")
+            self.assertEqual(ss, expected_ss, f"Failed ss for count {dict['count']}")
 
     def generic_decap_kat(self, Hqc, index):
         kat_file = self.file_map[index]
