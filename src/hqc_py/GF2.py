@@ -73,3 +73,18 @@ class GF2:
     def fromlist(self, xs: list[int]):
         for offset in xs:
             self.bits |= (1 << offset)
+
+    def tou64(self) -> list[int]:
+        """
+        Returns a list of u64 values representing self.bits from LSB to MSB.
+
+        Returns:
+            A list of integers, each representing 64 bits of self.bits.
+        """
+        l = []
+        mask = (1 << 64) - 1
+        bits = self.bits
+        while bits:
+            l.append(bits & mask)
+            bits >>= 64
+        return l
