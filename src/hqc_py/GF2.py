@@ -2,7 +2,8 @@
 class GF2:
     def __init__(self, size: int, bits: int):
         self.size = size
-        self.bits = bits
+        # Ensure bits fit within the specified size
+        self.bits = bits & ((1 << size) - 1)
 
     @classmethod
     def frombytes(cls, size: int, b: bytes):
