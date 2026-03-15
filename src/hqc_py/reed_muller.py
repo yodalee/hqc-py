@@ -1,9 +1,15 @@
 from typing import List
 
 class ReedMuller:
-    def __init__(self, n_repeat: int):
+    def __init__(self, n_repeat: int, param_n1: int):
         assert(n_repeat > 0)
+        assert(param_n1 > 0)
+
         self.n_repeat = n_repeat
+        # The length of input message to be encoded
+        self.param_n1 = param_n1
+        # The length of encoded message in bits
+        self.param_n2 = 128
 
     def encode_1byte(self, msg: bytes) -> bytes:
         """
@@ -58,8 +64,11 @@ class ReedMuller:
         Returns:
             A byte array of size PARAM_N2 containing the encoded message.
         """
-        cdws = [self.encode_1byte(msg[i:i+1]) * self.n_repeat for i in range(len(msg))]
-        return b''.join(cdws)
+        assert(len(msg) == self.param_n1, "Message length must be PARAM_N1 bytes")
+        cdws = [self.encode_1byte(msg[i:i+1]) * self.n_repeat for i in range(self.param_n1)]
+        encoded = b''.join(cdws)
+        assert(len(encoded) == (self.param_n1 * self.param_n2 * self.n_repeat) // 8)
+        return encoded
 
     def decode(self, encoded_data):
         # Implement the decoding logic here

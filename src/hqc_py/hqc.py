@@ -25,7 +25,10 @@ class Hqc:
             k = self.k,
             generator_polynomial = parameter_set["generator_polynomial"]
         )
-        self.rm = ReedMuller(n_repeat = parameter_set["n_repeat"])
+        self.rm = ReedMuller(
+            n_repeat = parameter_set["n_repeat"],
+            param_n1 = parameter_set["n1"]
+        )
 
     def hash_g(self, input_data: bytes) -> bytes:
         """
