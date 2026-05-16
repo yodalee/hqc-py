@@ -1,6 +1,20 @@
 from .hqc import Hqc
 
 # Default parameters for three HQC variants
+#
+# The details of each parameter:
+# n1       : The length of the Reed-Solomon code in bytes
+# n2       : The length of the Reed-Muller code in bytes
+# n        : The length of the scheme in bits
+# k        : The size of the information bits of the Reed-Solomon code
+# w        : The parameter omega, the weight of the error vector
+# we       : The parameter omega_e, the weight of the error vector in the encryption
+# fft      : Exponent for additive FFT (2^PARAM_FFT points)
+# n_repeat : The number of repetitions in the Reed-Muller code
+# len_security_bytes   : The security level in bytes
+# generator_polynomial : The generator polynomial of the Reed-Solomon code, represented as
+#            a list of coefficients, where the i-th element is the coefficient of x^i.
+#            The constant term is the first element.
 DEFAULT_PARAMETERS = {
 	"HQC-1": {
 		"n1": 46,
@@ -9,6 +23,7 @@ DEFAULT_PARAMETERS = {
 		"k": 16,
 		"w": 66,
 		"we": 75,
+        "fft": 4,
         "n_repeat": 3,
         "len_security_bytes": 16,
         "generator_polynomial": [
@@ -25,6 +40,7 @@ DEFAULT_PARAMETERS = {
 		"k": 24,
 		"w": 100,
 		"we": 114,
+        "fft": 5,
         "n_repeat": 5,
         "len_security_bytes": 24,
         "generator_polynomial": [
@@ -41,6 +57,7 @@ DEFAULT_PARAMETERS = {
 		"k": 32,
 		"w": 131,
 		"we": 149,
+        "fft": 5,
         "n_repeat": 5,
         "len_security_bytes": 32,
         "generator_polynomial": [
