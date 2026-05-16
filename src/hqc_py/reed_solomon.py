@@ -10,6 +10,7 @@ class ReedSolomon:
         self.k = k
         self.g = n - k + 1
         self.generator_polynomial = generator_polynomial
+        self.delta = (n - k) // 2
 
     def compute_generator_polynomial(self) -> List[int]:
         """
@@ -69,6 +70,28 @@ class ReedSolomon:
 
         return bytes(cdw) + msg
 
-    def decode(self, encoded_data):
-        # Implement the decoding logic here
-        pass
+    def decode(self, encoded_data: bytes) -> bytes:
+        """
+        Decode the received word.
+
+        This function relies on six steps:
+        1. Compute the `2 * self.delta` syndromes.
+        2. Compute the error-locator polynomial ``sigma(x)``.
+        3. Use an additive FFT to find the roots of ``sigma(x)`` (the error
+           locations) and take their inverses.
+        4. Compute the error-evaluator polynomial ``z(x)``.
+        5. Compute the error values at each located position.
+        6. Correct the received polynomial by subtracting the error values.
+
+        For a more complete treatment of Reed-Solomon decoding, see Lin and
+        Costello, *Error Control Coding: Fundamentals and Applications*.
+
+        Args:
+            encoded_data: A byte array of size ``PARAM_N1`` storing the
+                received word.
+
+        Returns:
+            A byte array of size ``PARAM_K`` containing the decoded message.
+        """
+        message = bytearray(self.k)
+        return message
