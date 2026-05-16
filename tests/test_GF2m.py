@@ -2,6 +2,26 @@ import unittest
 from hqc_py.GF2m import GF2m
 
 class TestGF2m(unittest.TestCase):
+    def test_compute_gf_exp(self):
+        from hqc_py.GF2m import GF2m
+        # The value is not cared for this test
+        computed = []
+        val = GF2m(1)
+        computed.append(int(val))
+        for _ in range(257):
+            val = val * GF2m(2)
+            computed.append(int(val))
+        self.assertEqual(computed, GF2m.gf_exp)
+
+    def test_compute_gf_log(self):
+        from hqc_py.GF2m import GF2m
+        alpha = GF2m(1)
+        computed = [0] * 256
+        for i in range(255):
+            computed[int(alpha)] = i
+            alpha = alpha * GF2m(2)
+        self.assertEqual(computed, GF2m.gf_log)
+
     def test_gfmul_small(self):
         a = GF2m(0b1010)
         b = GF2m(0b1100)

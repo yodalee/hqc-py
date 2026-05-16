@@ -1,42 +1,8 @@
+
 from typing import List
 from .GF2m import GF2m
 
 class ReedSolomon:
-    # Powers of the root alpha of 1 + x^2 + x^3 + x^4 + x^8.
-    # The last two elements are needed by the gf_mul function
-    # (for example if both elements to multiply are zero).
-    gf_exp = [
-        1,   2,   4,   8,   16,  32,  64,  128, 29,  58,  116, 232, 205, 135, 19,  38,  76,  152, 45,  90,  180, 117,
-        234, 201, 143, 3,   6,   12,  24,  48,  96,  192, 157, 39,  78,  156, 37,  74,  148, 53,  106, 212, 181, 119,
-        238, 193, 159, 35,  70,  140, 5,   10,  20,  40,  80,  160, 93,  186, 105, 210, 185, 111, 222, 161, 95,  190,
-        97,  194, 153, 47,  94,  188, 101, 202, 137, 15,  30,  60,  120, 240, 253, 231, 211, 187, 107, 214, 177, 127,
-        254, 225, 223, 163, 91,  182, 113, 226, 217, 175, 67,  134, 17,  34,  68,  136, 13,  26,  52,  104, 208, 189,
-        103, 206, 129, 31,  62,  124, 248, 237, 199, 147, 59,  118, 236, 197, 151, 51,  102, 204, 133, 23,  46,  92,
-        184, 109, 218, 169, 79,  158, 33,  66,  132, 21,  42,  84,  168, 77,  154, 41,  82,  164, 85,  170, 73,  146,
-        57,  114, 228, 213, 183, 115, 230, 209, 191, 99,  198, 145, 63,  126, 252, 229, 215, 179, 123, 246, 241, 255,
-        227, 219, 171, 75,  150, 49,  98,  196, 149, 55,  110, 220, 165, 87,  174, 65,  130, 25,  50,  100, 200, 141,
-        7,   14,  28,  56,  112, 224, 221, 167, 83,  166, 81,  162, 89,  178, 121, 242, 249, 239, 195, 155, 43,  86,
-        172, 69,  138, 9,   18,  36,  72,  144, 61,  122, 244, 245, 247, 243, 251, 235, 203, 139, 11,  22,  44,  88,
-        176, 125, 250, 233, 207, 131, 27,  54,  108, 216, 173, 71,  142, 1,   2,   4
-    ]
-
-    # Logarithm of elements of GF(2^8) to the base alpha (root of 1 + x^2 + x^3 + x^4 + x^8).
-    # The logarithm of 0 is set to 0 by convention.
-    gf_log = [
-        0,   0,   1,   25,  2,   50,  26,  198, 3,   223, 51,  238, 27,  104, 199, 75,  4,   100, 224, 14,  52,  141,
-        239, 129, 28,  193, 105, 248, 200, 8,   76,  113, 5,   138, 101, 47,  225, 36,  15,  33,  53,  147, 142, 218,
-        240, 18,  130, 69,  29,  181, 194, 125, 106, 39,  249, 185, 201, 154, 9,   120, 77,  228, 114, 166, 6,   191,
-        139, 98,  102, 221, 48,  253, 226, 152, 37,  179, 16,  145, 34,  136, 54,  208, 148, 206, 143, 150, 219, 189,
-        241, 210, 19,  92,  131, 56,  70,  64,  30,  66,  182, 163, 195, 72,  126, 110, 107, 58,  40,  84,  250, 133,
-        186, 61,  202, 94,  155, 159, 10,  21,  121, 43,  78,  212, 229, 172, 115, 243, 167, 87,  7,   112, 192, 247,
-        140, 128, 99,  13,  103, 74,  222, 237, 49,  197, 254, 24,  227, 165, 153, 119, 38,  184, 180, 124, 17,  68,
-        146, 217, 35,  32,  137, 46,  55,  63,  209, 91,  149, 188, 207, 205, 144, 135, 151, 178, 220, 252, 190, 97,
-        242, 86,  211, 171, 20,  42,  93,  158, 132, 60,  57,  83,  71,  109, 65,  162, 31,  45,  67,  216, 183, 123,
-        164, 118, 196, 23,  73,  236, 127, 12,  111, 246, 108, 161, 59,  82,  41,  157, 85,  170, 251, 96,  134, 177,
-        187, 204, 62,  90,  203, 89,  95,  176, 156, 169, 160, 81,  11,  245, 22,  235, 122, 117, 44,  215, 79,  174,
-        213, 233, 230, 231, 173, 232, 116, 214, 244, 234, 168, 80,  88,  175
-    ]
-
     def __init__(self, n, k, generator_polynomial):
         if n < k:
             raise ValueError("n must be greater than or equal to k")
@@ -45,36 +11,13 @@ class ReedSolomon:
         self.g = n - k + 1
         self.generator_polynomial = generator_polynomial
 
-    def compute_gf_exp(self) -> List[GF2m]:
-        """
-        Function to generate the gf_exp list of GF(2^8)
-        The gf_exp list is hard-coded in the class, so the functions is not used in production
-        """
-        gf_exp = [GF2m(1)]
-        # the gf_exp has extra two elements to handle multpilication of zero elements
-        for _ in range(257):
-            gf_exp.append(gf_exp[-1] * GF2m(2))
-        return gf_exp
-
-    def compute_gf_log(self) -> List[int]:
-        """
-        Function to generate the gf_log list of GF(2^8)
-        The gf_log list is hard-coded in the class, so the functions is not used in production
-        """
-        alpha = GF2m(1)
-        gf_log = [0] * 256
-        for i in range(255):
-            gf_log[int(alpha)] = i
-            alpha = alpha * GF2m(2)
-        return gf_log
-
     def compute_generator_polynomial(self) -> List[int]:
         """
         Computes the generator polynomial of the primitive Reed-Solomon code with given parameters.
 
         Code length is 2^m-1.
-        The alpha is 2, the generator polynommial is:
-         g(x) = (x + alpha^1)(x + alpha^2)...(x + alpha^g)
+        The alpha is 2, the generator polynomial is:
+            g(x) = (x + alpha^1)(x + alpha^2)...(x + alpha^g)
 
         Returns:
             poly: List of size self.g with coefficients of the generator polynomial
@@ -87,12 +30,13 @@ class ReedSolomon:
             # The new jth coefficient is computed as:
             # poly[j] = 1 * poly[j-1] + 2^i * poly[j]
             for j in range(i-1, 0, -1):
-                poly[j] = (self.gf_exp[(self.gf_log[poly[j]] + i) % 255] ^ poly[j - 1])
+                poly[j] = (GF2m.gf_exp[(GF2m.gf_log[poly[j]] + i) % 255] ^ poly[j - 1])
             # Constant term are multiply by 2^i
-            poly[0] = self.gf_exp[(self.gf_log[poly[0]] + i) % 255]
+            poly[0] = GF2m.gf_exp[(GF2m.gf_log[poly[0]] + i) % 255]
             # The highest degree coefficient is always 1
             poly.append(1)
         return poly
+
 
     def encode(self, msg: bytes) -> bytes:
         """
@@ -124,7 +68,6 @@ class ReedSolomon:
                 cdw[:-1], subtract[1:])]
 
         return bytes(cdw) + msg
-
 
     def decode(self, encoded_data):
         # Implement the decoding logic here
