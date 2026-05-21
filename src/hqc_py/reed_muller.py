@@ -64,31 +64,108 @@ class ReedMuller:
         Returns:
             A byte array of size PARAM_N2 containing the encoded message.
         """
-        assert(len(msg) == self.param_n1, "Message length must be PARAM_N1 bytes")
+        assert(len(msg) == self.param_n1), "Message length must be PARAM_N1 bytes"
         cdws = [self.encode_1byte(msg[i:i+1]) * self.n_repeat for i in range(self.param_n1)]
         encoded = b''.join(cdws)
         assert(len(encoded) == (self.param_n1 * self.param_n2 * self.n_repeat) // 8)
         return encoded
 
-    def decode(self, encoded_data: bytes) -> bytes:
+    def _collect_bits(self, encoded_data: bytes) -> List[int]:
         """
-        Decodes the received word.
+        Add repeated codewords into an expanded bit-count vector.
+
+        It counts how many times each of the 128 bit positions is set across all
+        repeated codewords.
 
         Args:
-            encoded_data: A byte array of size PARAM_N1 * PARAM_N2 containing the encoded message.
+            encoded_data: A byte array of size ``PARAM_N2 * n_repeat / 8``
+                containing one repeated RM(1,7) codeword stream.
 
         Returns:
-            A byte array of size PARAM_N1 storing the decoded message.
+            A list of 128 integers where each entry is the number of 1s seen at
+            that bit position across all repeats.
         """
-        # count the number of 1s in each bit possition across the repeated codewords
-        counts = [0] * 128
+        expected_length = (self.param_n2 * self.n_repeat) // 8
+        assert len(encoded_data) == expected_length, (
+            f"Encoded data length must be {expected_length} bytes"
+        )
+
+        # start collect
+        counts = [0] * self.param_n2
+        bytes_per_codeword = self.param_n2 // 8
+
         for repeat in range(self.n_repeat):
-            for offset in range(128):
-                byte = encoded_data[repeat*16 + offset//8]
-                for k in range(8):
-                    counts[j*8 + k] += (byte >> k) & 1
+            base = repeat * bytes_per_codeword
+            for byte_offset in range(bytes_per_codeword):
+                value = encoded_data[base + byte_offset]
+                bit_base = byte_offset * 8
+                for bit in range(8):
+                    counts[bit_base + bit] += (value >> bit) & 1
 
-        # hadamard transform to the counts
-        transform = self._hadamard_transform(counts)
+        return counts
 
-        raise NotImplementedError("ReedMuller.decode not implemented yet")
+    def _hadamard_transform(self, counts: List[int]) -> List[int]:
+        """
+        Performs the Hadamard transform on the input counts.
+
+        Args:
+            counts: A list of 128 integers representing the counts of 1s in each bit position.
+
+        Returns:
+            A list of 128 integers representing the Hadamard transform of the input counts.
+        """
+        assert len(counts) == 128, "Input to Hadamard transform must be of length 128"
+        transform = counts.copy()
+
+        for _ in range(7): # 7 = log2(128)
+            for i in range(64):
+                transform[i] = counts[2 * i] + counts[2 * i + 1]
+                transform[i + 64] = counts[2 * i] - counts[2 * i + 1]
+            counts = transform.copy()
+        return transform
+
+    def _find_peak(self, transform: List[int]) -> int:
+        """
+        Finds the index of the maximum value in the Hadamard transform.
+
+        Args:
+            transform: A list of 128 integers representing the Hadamard transform.
+
+        Returns:
+            The index of the maximum value in the transform, which corresponds to the decoded message byte.
+        """
+        idx, value = max(enumerate(transform), key=lambda pair: abs(pair[1]))
+        return idx | 0x80 if value > 0 else idx
+
+    def decode(self, encoded_data: bytes) -> bytes:
+        """
+        Decode the received word.
+
+        Decoding uses the fast Hadamard transform. For a complete treatment of
+        Reed-Muller decoding, see MacWilliams and Sloane, *The Theory of
+        Error-Correcting Codes*.
+
+        Args:
+            encoded_data: A byte array of size ``PARAM_N1 * PARAM_N2 * n_repeat / 8``
+            storing the received codeword stream.
+
+        Returns:
+            A byte array containing the decoded message.
+        """
+        # check the input length
+        expected_length = (self.param_n1 * self.param_n2 * self.n_repeat) // 8
+        assert len(encoded_data) == expected_length, f"Encoded data length must be {expected_length} bytes"
+        chunk_length = self.param_n2 * self.n_repeat // 8
+
+        message = bytearray(self.param_n1)
+
+        for i in range(self.param_n1):
+            start = i * chunk_length
+            end = start + chunk_length
+            chunk = encoded_data[start:end]
+            counts = self._collect_bits(chunk)
+            transform = self._hadamard_transform(counts)
+            transform[0] -= 64 * self.n_repeat
+            message[i] = self._find_peak(transform)
+
+        return bytes(message)
