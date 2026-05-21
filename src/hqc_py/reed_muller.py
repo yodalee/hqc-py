@@ -70,6 +70,25 @@ class ReedMuller:
         assert(len(encoded) == (self.param_n1 * self.param_n2 * self.n_repeat) // 8)
         return encoded
 
-    def decode(self, encoded_data):
-        # Implement the decoding logic here
-        pass
+    def decode(self, encoded_data: bytes) -> bytes:
+        """
+        Decodes the received word.
+
+        Args:
+            encoded_data: A byte array of size PARAM_N1 * PARAM_N2 containing the encoded message.
+
+        Returns:
+            A byte array of size PARAM_N1 storing the decoded message.
+        """
+        # count the number of 1s in each bit possition across the repeated codewords
+        counts = [0] * 128
+        for repeat in range(self.n_repeat):
+            for offset in range(128):
+                byte = encoded_data[repeat*16 + offset//8]
+                for k in range(8):
+                    counts[j*8 + k] += (byte >> k) & 1
+
+        # hadamard transform to the counts
+        transform = self._hadamard_transform(counts)
+
+        raise NotImplementedError("ReedMuller.decode not implemented yet")
