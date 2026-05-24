@@ -11,15 +11,15 @@ class TestReedSolomon(unittest.TestCase):
             k = DEFAULT_PARAMETERS["HQC-1"]["k"],
             generator_polynomial=None)
         poly = rs1.compute_generator_polynomial()
-        assert len(poly) == rs1.g
+        assert poly == DEFAULT_PARAMETERS["HQC-1"]["generator_polynomial"]
 
     def test_compute_generator_polynomial_hqc3(self):
         rs3 = ReedSolomon(
             n = DEFAULT_PARAMETERS["HQC-3"]["n1"],
             k = DEFAULT_PARAMETERS["HQC-3"]["k"],
-             generator_polynomial=None)
+            generator_polynomial=None)
         poly = rs3.compute_generator_polynomial()
-        assert len(poly) == rs3.g
+        assert poly == DEFAULT_PARAMETERS["HQC-3"]["generator_polynomial"]
 
     def test_compute_generator_polynomial_hqc5(self):
         rs5 = ReedSolomon(
@@ -27,7 +27,7 @@ class TestReedSolomon(unittest.TestCase):
             k = DEFAULT_PARAMETERS["HQC-5"]["k"],
             generator_polynomial=None)
         poly = rs5.compute_generator_polynomial()
-        assert len(poly) == rs5.g
+        assert poly == DEFAULT_PARAMETERS["HQC-5"]["generator_polynomial"]
 
     def test_derived_parameters(self):
         rs1 = ReedSolomon(
