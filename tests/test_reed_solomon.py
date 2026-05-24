@@ -5,7 +5,6 @@ from hqc_py.reed_solomon import ReedSolomon
 
 
 class TestReedSolomon(unittest.TestCase):
-
     def test_compute_generator_polynomial_hqc1(self):
         rs1 = ReedSolomon(
             n = DEFAULT_PARAMETERS["HQC-1"]["n1"],
@@ -29,6 +28,28 @@ class TestReedSolomon(unittest.TestCase):
             generator_polynomial=None)
         poly = rs5.compute_generator_polynomial()
         assert len(poly) == rs5.g
+
+    def test_derived_parameters(self):
+        rs1 = ReedSolomon(
+            n = DEFAULT_PARAMETERS["HQC-1"]["n1"],
+            k = DEFAULT_PARAMETERS["HQC-1"]["k"],
+            generator_polynomial=None)
+        self.assertEqual(rs1.delta, 15)
+        self.assertEqual(rs1.n_fft, 4)
+
+        rs3 = ReedSolomon(
+            n = DEFAULT_PARAMETERS["HQC-3"]["n1"],
+            k = DEFAULT_PARAMETERS["HQC-3"]["k"],
+             generator_polynomial=None)
+        self.assertEqual(rs3.delta, 16)
+        self.assertEqual(rs3.n_fft, 5)
+
+        rs5 = ReedSolomon(
+            n = DEFAULT_PARAMETERS["HQC-5"]["n1"],
+            k = DEFAULT_PARAMETERS["HQC-5"]["k"],
+            generator_polynomial=None)
+        self.assertEqual(rs5.delta, 29)
+        self.assertEqual(rs5.n_fft, 5)
 
     def test_encode_hqc1(self):
         rs1 = ReedSolomon(

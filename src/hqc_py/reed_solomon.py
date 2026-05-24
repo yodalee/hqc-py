@@ -2,15 +2,19 @@
 from typing import List
 from .GF2m import GF2m
 
+import math
+
 class ReedSolomon:
     def __init__(self, n, k, generator_polynomial):
         if n < k:
             raise ValueError("n must be greater than or equal to k")
         self.n = n
         self.k = k
-        self.g = n - k + 1
         self.generator_polynomial = generator_polynomial
+        # derived parameters
+        self.g = n - k + 1
         self.delta = (n - k) // 2
+        self.n_fft = math.ceil(math.log2(k))
 
     def compute_generator_polynomial(self) -> List[int]:
         """
