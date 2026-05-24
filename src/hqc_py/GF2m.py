@@ -1,5 +1,7 @@
 # Galois field implementation for GF(2^m)
 
+from __future__ import annotations
+
 class GF2m:
     # Powers of the root alpha of 1 + x^2 + x^3 + x^4 + x^8.
     # The last two elements are needed by the gf_mul function
@@ -35,6 +37,7 @@ class GF2m:
         187, 204, 62,  90,  203, 89,  95,  176, 156, 169, 160, 81,  11,  245, 22,  235, 122, 117, 44,  215, 79,  174,
         213, 233, 230, 231, 173, 232, 116, 214, 244, 234, 168, 80,  88,  175
     ]
+
     def __init__(self, bits=0):
         if bits >= 256:
             raise ValueError("Bits must be less than 256 for GF(2^8)")
@@ -42,22 +45,40 @@ class GF2m:
         # Irreducible polynomial (x^8 + x^4 + x^3 + x + 1) for GF(2^8)
         self.q = 0x11D
 
-    def __str__(self):
+    def __str__(self) -> str:
         return bin(self.bits)[2:].zfill(8)
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return self.bits.to_bytes((8 + 7) // 8, 'little')
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"GF2m({bin(self.bits)[2:]})"
 
-    def __int__(self):
+    def __int__(self) -> int:
         return self.bits
 
-    def __index__(self):
+    def __index__(self) -> int:
         return self.bits
 
-    def reduce(self, n: int):
+    def __add__(self, other) -> GF2m:
+        """
+        Add two elements in GF(2^m).
+
+        Args:
+            other (GF2m): Another element of GF(2^m) to multiply with.
+        Raises:
+            ValueError: If the types or field sizes are incompatible.
+        Returns:
+            GF2m: The product of the two elements in GF(2^m).
+        """
+        if not isinstance(other, GF2m):
+            raise ValueError("Incompatible types for addition")
+        return GF2m(self.bits ^ other.bits)
+
+    def __radd__(self, other) -> GF2m:
+        return self.__add__(other)
+
+    def reduce(self, n: int) -> int:
         """
         Reduce a polynomial modulo 0x11D in GF(2^8).
 
@@ -86,7 +107,7 @@ class GF2m:
                 n ^= (mod << dist)
         return n
 
-    def __mul__(self, other):
+    def __mul__(self, other) -> GF2m:
         """
         Multiply two elements in GF(2^m).
 
@@ -111,23 +132,49 @@ class GF2m:
 
         return GF2m(self.reduce(result))
 
-    def __rmul__(self, other):
+    def __rmul__(self, other) -> GF2m:
         return self.__mul__(other)
 
-    def __add__(self, other):
+    def square(self) -> GF2m:
         """
-        Add two elements in GF(2^m).
+        Square an element in GF(2^m).
+        We choose not to implement the power function
 
-        Args:
-            other (GF2m): Another element of GF(2^m) to multiply with.
-        Raises:
-            ValueError: If the types or field sizes are incompatible.
         Returns:
-            GF2m: The product of the two elements in GF(2^m).
+            GF2m: The square of the element in GF(2^m).
         """
-        if not isinstance(other, GF2m):
-            raise ValueError("Incompatible types for addition")
-        return GF2m(self.bits ^ other.bits)
+        b = self.bits
+        result = b & 1
+        for i in range(1, 8):
+            b <<= 1
+            result ^= (b & (1 << (2 *i)))
+        return GF2m(self.reduce(result))
 
-    def __radd__(self, other):
-        return self.__add__(other)
+    def inverse(self) -> GF2m:
+        """
+        Compute the multiplicative inverse in GF(2^8).
+        The inverse is computed by Fermat's little theorem, which states
+        that a ^ 254 = a ^ (2^8 - 2) is the multiplicative inverse of a in GF(2^8) for
+        Using the addition chain 1 2 3 4 7 11 15 30 60 120 127 254
+
+        Returns:
+            The inverse of the element in GF(2^m)
+
+        Raises:
+            ValueError: If the element is zero.
+        """
+        if self.bits == 0:
+            raise ValueError("Zero does not have a multiplicative inverse")
+        a1 = self
+        a2 = a1.square()
+        a3 = a1 * a2
+        a4 = a2.square()
+        a7 = a3 * a4
+        a11 = a4 * a7
+        a15 = a11 * a4
+        a30 = a15.square()
+        a60 = a30.square()
+        a120 = a60.square()
+        a127 = a120 * a7
+        a254 = a127.square()
+        return a254
