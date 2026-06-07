@@ -60,6 +60,16 @@ class GF2m:
     def __index__(self) -> int:
         return self.bits
 
+    def __eq__(self, other) -> bool:
+        if isinstance(other, GF2m):
+            return self.bits == other.bits
+        if isinstance(other, int):
+            return self.bits == other
+        return NotImplemented
+
+    def __hash__(self) -> int:
+        return hash(self.bits)
+
     def __add__(self, other) -> GF2m:
         """
         Add two elements in GF(2^m).

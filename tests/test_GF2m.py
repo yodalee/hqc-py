@@ -2,6 +2,18 @@ import unittest
 from hqc_py.GF2m import GF2m
 
 class TestGF2m(unittest.TestCase):
+    def test_equality_with_gf2m(self):
+        self.assertTrue(GF2m(42) == GF2m(42))
+        self.assertFalse(GF2m(42) == GF2m(43))
+
+    def test_equality_with_int(self):
+        self.assertTrue(GF2m(42) == 42)
+        self.assertFalse(GF2m(42) == 41)
+
+    def test_hash_consistency_with_equality(self):
+        self.assertEqual(hash(GF2m(42)), hash(GF2m(42)))
+        self.assertEqual(len({GF2m(42), GF2m(42), GF2m(43)}), 2)
+
     def test_compute_gf_exp(self):
         from hqc_py.GF2m import GF2m
         # The value is not cared for this test
