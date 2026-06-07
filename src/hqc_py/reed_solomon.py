@@ -88,7 +88,14 @@ class ReedSolomon:
         Returns:
             A list of ``2 * self.delta`` syndrome values in ``GF(2^m)``.
         """
-        return []
+        syndromes = [GF2m(0)] * (2 * self.delta)
+        for i in range(2 * self.delta):
+            for j in range(1, self.n):
+                idx = ((i+1) * j) % 255
+                alpha = GF2m.gf_exp[idx]
+                syndromes[i] += GF2m(codeword[j]) * GF2m(alpha)
+            syndromes[i] += GF2m(codeword[0])
+        return syndromes
 
     def _compute_elp(self, syndromes: List[GF2m]) -> Tuple[int, List[GF2m]]:
         """
