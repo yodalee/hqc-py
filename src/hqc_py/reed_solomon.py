@@ -105,11 +105,10 @@ class ReedSolomon:
         algorithm (see Lin and Costello, Chapter 6, BCH Codes).
 
         Notes:
-            - ``p`` denotes ``rho`` and is initialized at ``-1``.
-            - ``X_sigma_p`` represents ``X^(mu-rho) * sigma_p(X)``.
-            - ``sigma`` and ``X_sigma_p`` are updated in place.
-            - ``sigma_copy`` is used as temporary storage when
-              ``X_sigma_p`` must be updated.
+            - ``p`` denotes the rho and is initialized at -1.
+            - ``X_sigma_p`` means the ``X^(mu-rho) * sigma_prev(X)``.
+            - ``sigma and ``X_sigma_p`` are updated in place.
+            - ``X_sigma_p`` must be updated.
             - Correct decoding requires ``deg(sigma) <= self.delta``.
               Only the first ``self.delta + 1`` coefficients are meaningful.
 
@@ -120,7 +119,60 @@ class ReedSolomon:
         Returns:
             The degree of ``sigma`` and the polynomial coefficients.
         """
-        return 0, []
+        # Start with Sigma_0 = 1 and update the coefficients in place.
+        sigma = [GF2m(1)] + [GF2m(0)] * (self.delta)
+        deg_sigma = 0
+
+        # Start with previous degree of 0 and x times sigma (X_sigma_prev) = x
+        deg_sigma_prev = 0
+        X_sigma_prev = [GF2m(0), GF2m(1)] + [GF2m(0)] * (self.delta - 1)
+
+        d = syndromes[0]
+        d_prev = GF2m(1)
+        pp = -1 # 2*rho
+
+        for mu in range(self.delta * 2):
+            # Backup sigma in case we need it to update X_sigma_p
+            sigma_copy = sigma.copy()
+            deg_sigma_copy = deg_sigma
+
+            dd = d * d_prev.inverse()
+            for i in range(1, min(mu+2, self.delta + 1)):
+                sigma[i] += dd * X_sigma_prev[i]
+
+            deg_X = mu - pp
+            candidate_deg = deg_X + deg_sigma_prev
+
+            # the degree of ELP has increased
+            degree_increased = d != GF2m(0) and candidate_deg > deg_sigma
+
+            if degree_increased:
+                deg_sigma = candidate_deg
+
+            if mu == self.delta * 2 - 1:
+                break
+
+            if degree_increased:
+                pp = mu
+                d_prev = d
+                deg_sigma_prev = deg_sigma_copy
+                # X_sigma_p = x * sigma_copy
+                for i in range(self.delta, 0, -1):
+                    X_sigma_prev[i] = sigma_copy[i - 1]
+            else:
+                # keep the existing reference polynomial and multiply
+                # X_sigma_p by x
+                for i in range(self.delta, 0, -1):
+                    X_sigma_prev[i] = X_sigma_prev[i - 1]
+
+            # Compute the discrepancy for the next iteration
+            #
+            # d = Syndrome[mu + 1] + sigma[1] * Syndrome[mu] + sigma[2] * Syndrome[mu - 1] + ...
+            d = syndromes[mu + 1]
+            for i in range(1, min(mu+2, self.delta + 1)):
+                d += sigma[i] * syndromes[(mu + 1) - i]
+
+        return deg_sigma, sigma
 
     def _compute_roots(self, sigma: List[GF2m]) -> List[GF2m]:
         """
