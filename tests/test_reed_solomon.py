@@ -108,6 +108,21 @@ class TestReedSolomon(unittest.TestCase):
         self.assertEqual(len(cdw), rs1.n)
         self.assertEqual(rs1._compute_syndromes(cdw), golden)
 
+    def test_compute_elp_hqc1(self):
+        rs1 = ReedSolomon(
+            n = DEFAULT_PARAMETERS["HQC-1"]["n1"],
+            k = DEFAULT_PARAMETERS["HQC-1"]["k"],
+            generator_polynomial = DEFAULT_PARAMETERS["HQC-1"]["generator_polynomial"]
+        )
+        syndromes = list(GF2m(x) for x in [
+            235, 4, 143, 159, 153, 223, 129, 218, 228, 171, 28,
+            138, 250, 232, 39, 160, 60, 134, 118, 84, 145,
+            220, 162, 245, 71, 180, 181, 95, 177, 208])
+        golden = [1, 234]
+        degree, elp = rs1._compute_elp(syndromes)
+        self.assertEqual(degree, 1)
+        self.assertEqual(elp[:2], golden)
+
     def test_compute_syndrome_hqc3(self):
         rs3 = ReedSolomon(
             n = DEFAULT_PARAMETERS["HQC-3"]["n1"],
@@ -137,6 +152,24 @@ class TestReedSolomon(unittest.TestCase):
             184, 228, 150, 221, 61, 173, 117, 193]
         self.assertEqual(len(cdw), rs5.n)
         self.assertEqual(rs5._compute_syndromes(cdw), golden)
+
+    def test_compute_elp_hqc5(self):
+        rs5 = ReedSolomon(
+            n = DEFAULT_PARAMETERS["HQC-5"]["n1"],
+            k = DEFAULT_PARAMETERS["HQC-5"]["k"],
+            generator_polynomial = DEFAULT_PARAMETERS["HQC-5"]["generator_polynomial"]
+        )
+        syndromes = list(GF2m(x) for x in [
+            166, 245, 1, 143, 70, 101, 217, 59, 168, 252,
+            130, 195, 44, 58, 39, 186, 231, 26, 23, 146,
+            219, 56, 36, 54, 45, 181, 97, 223, 62, 33,
+            191, 110, 89, 251, 8, 12, 10, 15, 134, 197,
+            41, 179, 100, 86, 125, 205, 37, 185, 107, 208,
+            184, 228, 150, 221, 61, 173, 117,193])
+        golden = [1, 143]
+        degree, elp = rs5._compute_elp(syndromes)
+        self.assertEqual(degree, 1)
+        self.assertEqual(elp[:2], golden)
 
 if __name__ == '__main__':
     unittest.main()
