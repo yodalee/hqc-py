@@ -1,3 +1,4 @@
+import random
 import unittest
 
 from hqc_py.default_parameters import DEFAULT_PARAMETERS
@@ -172,6 +173,37 @@ class TestReedSolomon(unittest.TestCase):
         ]
         self.assertEqual(z[:len(golden)], golden)
         self.assertFalse(any(z[len(golden):]))
+
+    def _assert_error_correction_for_level(self, rs, iterations=5):
+        for _ in range(iterations):
+            rng = random.Random()
+            msg = bytes(rng.randrange(256) for _ in range(rs.k))
+            encoded = rs.encode(msg)
+
+            for error_count in range(1, rs.delta + 1):
+                rng = random.Random()
+                positions = set()
+                while len(positions) < error_count:
+                    positions.add(rng.randrange(rs.n))
+
+                corrupted = bytearray(encoded)
+                for pos in positions:
+                    corrupted[pos] = (~corrupted[pos]) & 0xFF
+
+                decoded = rs.decode(bytes(corrupted))
+                self.assertEqual(decoded[:rs.k], msg)
+
+    @unittest.skip("decode is not implemented fully")
+    def test_decode_error_correction_hqc1(self):
+        self._assert_error_correction_for_level(self.rs1, iterations=5)
+
+    @unittest.skip("decode is not implemented fully")
+    def test_decode_error_correction_hqc3(self):
+        self._assert_error_correction_for_level(self.rs3, iterations=5)
+
+    @unittest.skip("decode is not implemented fully")
+    def test_decode_error_correction_hqc5(self):
+        self._assert_error_correction_for_level(self.rs5, iterations=5)
 
 if __name__ == '__main__':
     unittest.main()
