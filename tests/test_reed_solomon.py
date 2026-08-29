@@ -1,5 +1,6 @@
 import random
 import unittest
+from itertools import zip_longest
 
 from hqc_py.default_parameters import DEFAULT_PARAMETERS
 from hqc_py.reed_solomon import ReedSolomon
@@ -9,6 +10,12 @@ from hqc_py.GF2m import GF2m
 def to_gf2m(values):
     return [GF2m(v) for v in values]
 
+def equal_poly(poly1, poly2):
+    """Check if two polynomials are equal, also check trailing zero"""
+    for c0, c1 in zip_longest(poly1, poly2, fillvalue=GF2m(0)):
+        if c0 != c1:
+            return False
+    return True
 
 class TestReedSolomon(unittest.TestCase):
     def setUp(self):
@@ -69,7 +76,7 @@ class TestReedSolomon(unittest.TestCase):
             "3deca12f8963918f537c67f2571fffde4bb80684d826860c7515ce86e35571f5")
         encoded = self.rs5.encode(m)
         self.assertEqual(encoded, golden)
-    
+
     def test_compute_syndrome_hqc1(self):
         """Test the syndrome computation. The cases comes from KAT tests in C code"""
         cdw = bytes.fromhex(
@@ -122,7 +129,7 @@ class TestReedSolomon(unittest.TestCase):
         golden = [1, 143]
         degree, elp = self.rs5._compute_elp(syndromes)
         self.assertEqual(degree, 1)
-        self.assertEqual(elp[:2], golden)
+        self.assertTrue(equal_poly(elp, golden))
 
     def test_compute_z_hqc1(self):
         syndromes = to_gf2m([
@@ -135,8 +142,7 @@ class TestReedSolomon(unittest.TestCase):
         golden = [
             1, 191, 74, 94, 12, 150, 36, 209, 34, 160, 88, 84, 153, 148, 118, 174
         ]
-        self.assertEqual(z[:len(golden)], golden)
-        self.assertFalse(any(z[len(golden):]))
+        self.assertTrue(equal_poly(z, golden))
 
     def test_compute_z_hqc3(self):
         syndromes = to_gf2m([
@@ -147,8 +153,7 @@ class TestReedSolomon(unittest.TestCase):
         ])
         z = self.rs3._compute_z_poly(elp, syndromes)
         golden = [1, 131, 152, 180, 63, 154, 89, 199, 209, 66, 156, 232, 195, 13, 249, 88, 81]
-        self.assertEqual(z[:len(golden)], golden)
-        self.assertFalse(any(z[len(golden):]))
+        self.assertTrue(equal_poly(z, golden))
 
 
     def test_compute_z_hqc5(self):
@@ -171,8 +176,7 @@ class TestReedSolomon(unittest.TestCase):
             46, 216, 64, 66, 138, 125, 228, 108, 199, 197, \
             237, 163, 223, 191, 67, 217, 5, 109, 174, 20
         ]
-        self.assertEqual(z[:len(golden)], golden)
-        self.assertFalse(any(z[len(golden):]))
+        self.assertTrue(equal_poly(z, golden))
 
     def _assert_error_correction_for_level(self, rs, iterations=5):
         for _ in range(iterations):
