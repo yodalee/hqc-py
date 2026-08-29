@@ -186,18 +186,18 @@ class ReedSolomon:
         """
         return []
 
-    def _compute_z_poly(self, sigma: List[GF2m], deg: int, syndromes: List[GF2m]) -> List[GF2m]:
+    def _compute_z_poly(self, sigma: List[GF2m],  syndromes: List[GF2m]) -> List[GF2m]:
         """
         Compute the error-evaluator polynomial ``z(x)``.
 
         Args:
             sigma: Error-locator polynomial coefficients of size 2^PARAM_FFT.
-            deg: Degree of ``sigma``.
             syndromes: syndromes of size 2 * PARAM_DELTA.
 
         Returns:
             The array of size PARAM_DELTA + 1, coefficients of ``z(x)``.
         """
+        deg = len(sigma) - 1
         z = [GF2m(1)] + [GF2m(0)] * self.delta
 
         # non-constant implementation
@@ -269,13 +269,13 @@ class ReedSolomon:
 
         # 2. Compute the error locator polynomial sigma
         # Sigma's degree is at most PARAM_DELTA but the FFT requires the extra room
-        deg, sigma = self._compute_elp(syndromes)
+        sigma = self._compute_elp(syndromes)
 
         # 3. compute the error polynomial error
         error = self._compute_roots(sigma)
 
         # 4. Compute the polynomial z(x)
-        z = self._compute_z_poly(sigma, deg, syndromes)
+        z = self._compute_z_poly(sigma, syndromes)
 
         # 5. Compute the error values
         error_values = self._compute_error_values(z, error)

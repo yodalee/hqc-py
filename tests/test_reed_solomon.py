@@ -131,7 +131,7 @@ class TestReedSolomon(unittest.TestCase):
         elp = to_gf2m([
             1, 137, 74, 139, 12, 91, 36, 202, 34, 138, 88, 160, 153, 167, 118, 68
         ])
-        z = self.rs1._compute_z_poly(elp, len(elp) - 1, syndromes)
+        z = self.rs1._compute_z_poly(elp, syndromes)
         golden = [
             1, 191, 74, 94, 12, 150, 36, 209, 34, 160, 88, 84, 153, 148, 118, 174
         ]
@@ -145,7 +145,7 @@ class TestReedSolomon(unittest.TestCase):
         elp = to_gf2m([
             1, 115, 152, 220, 63, 105, 89, 96, 209, 10, 156, 171, 195, 76, 249, 146, 81
         ])
-        z = self.rs3._compute_z_poly(elp, len(elp) - 1, syndromes)
+        z = self.rs3._compute_z_poly(elp, syndromes)
         golden = [1, 131, 152, 180, 63, 154, 89, 199, 209, 66, 156, 232, 195, 13, 249, 88, 81]
         self.assertEqual(z[:len(golden)], golden)
         self.assertFalse(any(z[len(golden):]))
@@ -165,7 +165,7 @@ class TestReedSolomon(unittest.TestCase):
             46, 99, 64, 10, 138, 114, 228, 191, 199, 156, \
             237, 8, 223, 137, 67, 29, 5, 193, 174, 86
         ])
-        z = self.rs5._compute_z_poly(elp, len(elp) - 1, syndromes)
+        z = self.rs5._compute_z_poly(elp, syndromes)
         golden = [
             1, 253, 200, 251, 140, 222, 187, 83, 81, 78, \
             46, 216, 64, 66, 138, 125, 228, 108, 199, 197, \
