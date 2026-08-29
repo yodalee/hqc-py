@@ -60,6 +60,9 @@ class GF2m:
     def __index__(self) -> int:
         return self.bits
 
+    def __bool__(self) -> bool:
+        return self.bits != 0
+
     def __eq__(self, other) -> bool:
         if isinstance(other, GF2m):
             return self.bits == other.bits

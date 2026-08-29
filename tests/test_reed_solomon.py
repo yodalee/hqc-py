@@ -171,5 +171,70 @@ class TestReedSolomon(unittest.TestCase):
         self.assertEqual(degree, 1)
         self.assertEqual(elp[:2], golden)
 
+    def test_compute_z_hqc1(self):
+        rs1 = ReedSolomon(
+            n = DEFAULT_PARAMETERS["HQC-1"]["n1"],
+            k = DEFAULT_PARAMETERS["HQC-1"]["k"],
+            generator_polynomial = DEFAULT_PARAMETERS["HQC-1"]["generator_polynomial"]
+        )
+        syndromes = [GF2m(i) for i in [
+            54, 153, 63, 195, 193, 213, 147, 4, 103, 215, 79, 66, 136, 161, 138, 107, 93, 193, 239, 145, 50, 175, 166, 136, 231, 192, 110, 83, 120, 19
+        ]]
+        elp = [GF2m(i) for i in [
+            1, 137, 74, 139, 12, 91, 36, 202, 34, 138, 88, 160, 153, 167, 118, 68
+        ]]
+        z = rs1._compute_z_poly(elp, len(elp) - 1, syndromes)
+        golden = [
+            1, 191, 74, 94, 12, 150, 36, 209, 34, 160, 88, 84, 153, 148, 118, 174
+        ]
+        self.assertEqual(z[:len(golden)], golden)
+        self.assertFalse(any(z[len(golden):]))
+
+    def test_compute_z_hqc3(self):
+        rs3 = ReedSolomon(
+            n = DEFAULT_PARAMETERS["HQC-3"]["n1"],
+            k = DEFAULT_PARAMETERS["HQC-3"]["k"],
+            generator_polynomial = DEFAULT_PARAMETERS["HQC-3"]["generator_polynomial"]
+        )
+        syndromes = [GF2m(i) for i in [
+            240, 11, 155, 159, 145, 16, 74, 123, 132, 114, 231, 254, 200, 57, 30, 229, 53, 26, 162, 169, 158, 176, 7, 2, 166, 155, 196, 109, 12, 247, 58, 99
+        ]]
+        elp = [GF2m(i) for i in [
+            1, 115, 152, 220, 63, 105, 89, 96, 209, 10, 156, 171, 195, 76, 249, 146, 81
+        ]]
+        z = rs3._compute_z_poly(elp, len(elp) - 1, syndromes)
+        golden = [1, 131, 152, 180, 63, 154, 89, 199, 209, 66, 156, 232, 195, 13, 249, 88, 81]
+        self.assertEqual(z[:len(golden)], golden)
+        self.assertFalse(any(z[len(golden):]))
+
+
+    def test_compute_z_hqc5(self):
+        rs5 = ReedSolomon(
+            n = DEFAULT_PARAMETERS["HQC-5"]["n1"],
+            k = DEFAULT_PARAMETERS["HQC-5"]["k"],
+            generator_polynomial = DEFAULT_PARAMETERS["HQC-5"]["generator_polynomial"]
+        )
+        syndromes = [GF2m(i) for i in [
+          126, 115, 27, 84, 156, 97, 242, 206, 247, 85, \
+          153, 121, 135, 216, 133, 35, 53, 78, 119, 51, \
+          178, 195, 237, 54, 186, 52, 247, 101, 215, 231, \
+          98, 241, 249, 183, 18, 82, 10, 63, 144, 15, \
+          224, 131, 130, 4, 149, 210, 17, 153, 136, 50, \
+          234, 74, 149, 78, 179, 18, 231, 145
+        ]]
+        elp = [GF2m(i) for i in [
+            1, 131, 200, 154, 140, 122, 187, 199, 81, 56, \
+            46, 99, 64, 10, 138, 114, 228, 191, 199, 156, \
+            237, 8, 223, 137, 67, 29, 5, 193, 174, 86
+        ]]
+        z = rs5._compute_z_poly(elp, len(elp) - 1, syndromes)
+        golden = [
+            1, 253, 200, 251, 140, 222, 187, 83, 81, 78, \
+            46, 216, 64, 66, 138, 125, 228, 108, 199, 197, \
+            237, 163, 223, 191, 67, 217, 5, 109, 174, 20
+        ]
+        self.assertEqual(z[:len(golden)], golden)
+        self.assertFalse(any(z[len(golden):]))
+
 if __name__ == '__main__':
     unittest.main()
