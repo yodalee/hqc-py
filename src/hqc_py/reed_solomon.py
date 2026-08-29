@@ -191,14 +191,28 @@ class ReedSolomon:
         Compute the error-evaluator polynomial ``z(x)``.
 
         Args:
-            sigma: Error-locator polynomial coefficients.
+            sigma: Error-locator polynomial coefficients of size 2^PARAM_FFT.
             deg: Degree of ``sigma``.
-            syndromes: Computed syndrome values.
+            syndromes: syndromes of size 2 * PARAM_DELTA.
 
         Returns:
-            The coefficients of ``z(x)``.
+            The array of size PARAM_DELTA + 1, coefficients of ``z(x)``.
         """
-        return []
+        z = [GF2m(1)] + [GF2m(0)] * self.delta
+
+        # non-constant implementation
+        # assign z with index smaller then syndrome degree to ELP, otherwise assign to 0
+        for i in range(1, self.delta + 1):
+            if i <= deg:
+                z[i] = sigma[i]
+        z[1] += syndromes[0]
+
+        for i in range(2, self.delta + 1):
+            if i <= deg:
+                z[i] += syndromes[i - 1]
+                for j in range(1, i):
+                    z[i] += sigma[j] * syndromes[i - j - 1]
+        return z
 
     def _compute_error_values(self, z: List[GF2m], error: List[GF2m]) -> List[GF2m]:
         """
