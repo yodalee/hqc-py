@@ -1,7 +1,7 @@
 import unittest
 
 from hqc_py.fft import FFT
-
+from hqc_py.GF2m import GF2m
 
 class TestFFT(unittest.TestCase):
     def test_compute_fft_betas_m8(self):
@@ -28,3 +28,13 @@ class TestFFT(unittest.TestCase):
                     14, 142, 78, 206, 46, 174, 110, 238, \
                     30, 158, 94, 222, 62, 190, 126, 254]
         self.assertEqual(fft.betas_sums, expected)
+
+    def test_radix_level_2(self):
+        fft = FFT()
+        f = list(map(lambda v: GF2m(v), [11, 22, 33, 44]))
+        f0, f1 = fft.radix(f, 2)
+        self.assertEqual(f0, [GF2m(11), GF2m(33) + GF2m(44)])
+        self.assertEqual(f1, [GF2m(22) + GF2m(33) + GF2m(44), GF2m(44)])
+
+if __name__ == '__main__':
+    unittest.main()

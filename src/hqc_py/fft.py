@@ -33,7 +33,49 @@ class FFT:
 
         return subset_sums
 
-    def fft(self, f: list[int], f_coeffs: int) -> list[int]:
+    def radix(self, f: list[GF2m], level: int) -> tuple[list[GF2m], list[GF2m]]:
+        """Compute the radix conversion of a polynomial in GF(2^m)[x].
+
+        Computes ``f0`` and ``f1`` such that
+        ``f(x) = f0(x^2 - x) + x * f1(x^2 - x)``, as proposed by
+        Bernstein, Chou and Schwabe:
+        https://binary.cr.yp.to/mcbits-20130616.pdf
+
+        Args:
+            f: Polynomial coefficients. The input size is a power of 2.
+            level: ``2**level`` is the smallest power of 2 greater than or
+                equal to the number of coefficients in ``f``.
+
+        Returns:
+            A tuple ``(f0, f1)`` where each list is half the size of ``f``.
+        """
+        assert level >= 1, f"Radix level {level} must be at least 1"
+        assert len(f) == 1 << level, f"Polynomial size {len(f)} is not {1 << level}"
+
+        if level == 1:
+            return [f[0]], [f[1]]
+
+        # The generalized radix conversion is computed recursively.
+        # The polynomial f is cut into 4 sections of Q0, Q1, R0, R1
+        n = 1 << (level - 2)
+        Q = [GF2m(0)] * (2 * n)
+        R = [GF2m(0)] * (2 * n)
+        # assume that f has 4 * n elements
+        Q[:n] = f[3*n:]
+        Q[n:2*n] = f[3*n:]
+        R[:2*n] = f[:2*n]
+
+        for i in range(n):
+            Q[i] += f[2 * n + i]
+            R[n + i] += Q[i]
+
+        Q0, Q1 = self.radix(Q, level - 1)
+        R0, R1 = self.radix(R, level - 1)
+        R0.extend(Q0)
+        R1.extend(Q1)
+        return R0, R1
+
+    def fft(self, f: list[GF2m], f_coeffs: int) -> list[GF2m]:
         """Evaluate f on all field elements using an additive FFT algorithm.
 
         `f_coeffs` is the number of coefficients of `f` (that is, deg(f) + 1).
