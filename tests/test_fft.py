@@ -42,5 +42,14 @@ class TestFFT(unittest.TestCase):
         w = fft.fft(f, 1)
         self.assertEqual(w, [GF2m(42)] * (1 << GF2m.m))
 
+    def test_fft_x(self):
+        fft = FFT(4)
+        f = [GF2m(0)] + [GF2m(1)] + [GF2m(0)] * ((1 << 4) - 2)
+        w = fft.fft(f, 2)
+        golden = fft.betas_sums + [x + GF2m(1) for x in fft.betas_sums]
+        for (i, (a, b)) in enumerate(zip(w, golden)):
+            self.assertEqual(a, b)
+        self.assertEqual(w, golden)
+
 if __name__ == '__main__':
     unittest.main()
