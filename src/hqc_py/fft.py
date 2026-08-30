@@ -190,3 +190,29 @@ class FFT:
             w[k+i] += w[i]
 
         return w
+
+    def retrieve_error_poly(self, w: list[GF2m]) -> list[GF2m]:
+        """Retrieve the error polynomial from the evaluations of the ELP.
+
+        Args:
+            w: Evaluations of the ELP on all field elements.
+
+        Returns:
+            A list of error locations.
+        """
+        k = 1 << (GF2m.m - 1)
+        error = [GF2m(0)] * (1 << GF2m.m)
+        if w[0] == GF2m(0):
+            error[0] += GF2m(1)
+        if w[k] == GF2m(0):
+            error[0] += GF2m(1)
+
+        for i in range(1, k):
+            index = 255 - GF2m.gf_log[self.betas_sums[i]]
+            if w[i] == GF2m(0):
+                error[index] += GF2m(1)
+
+            index = 255 - GF2m.gf_log[self.betas_sums[i] + GF2m(1)]
+            if w[i + k] == GF2m(0):
+                error[index] += GF2m(1)
+        return error
