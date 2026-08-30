@@ -36,5 +36,11 @@ class TestFFT(unittest.TestCase):
         self.assertEqual(f0, [GF2m(11), GF2m(33) + GF2m(44)])
         self.assertEqual(f1, [GF2m(22) + GF2m(33) + GF2m(44), GF2m(44)])
 
+    def test_fft_constant(self):
+        fft = FFT(4)
+        f = [GF2m(42)] + [GF2m(0)] * ((1 << 4) - 1)
+        w = fft.fft(f, 1)
+        self.assertEqual(w, [GF2m(42)] * (1 << GF2m.m))
+
 if __name__ == '__main__':
     unittest.main()
