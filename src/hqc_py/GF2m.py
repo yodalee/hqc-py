@@ -38,6 +38,8 @@ class GF2m:
         213, 233, 230, 231, 173, 232, 116, 214, 244, 234, 168, 80,  88,  175
     ]
 
+    m = 8
+
     def __init__(self, bits=0):
         if bits >= 256:
             raise ValueError("Bits must be less than 256 for GF(2^8)")
