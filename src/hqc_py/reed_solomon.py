@@ -172,7 +172,7 @@ class ReedSolomon:
             for i in range(1, min(mu+2, self.delta + 1)):
                 d += sigma[i] * syndromes[(mu + 1) - i]
 
-        return deg_sigma, sigma
+        return sigma
 
     def _compute_roots(self, sigma: List[GF2m]) -> List[GF2m]:
         """
