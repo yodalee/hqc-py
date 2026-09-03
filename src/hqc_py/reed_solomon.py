@@ -285,7 +285,9 @@ class ReedSolomon:
         Returns:
             The corrected codeword.
         """
-        return b""
+        assert len(encoded_data) == self.n, f"Encoded data length must be {self.n} bytes"
+        assert len(error_values) == self.n, f"Error values length must be {self.n} bytes"
+        return bytes([a ^ b.bits for a, b, in zip(encoded_data, error_values)])
 
     def decode(self, encoded_data: bytes) -> bytes:
         """
