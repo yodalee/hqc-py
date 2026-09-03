@@ -228,7 +228,51 @@ class ReedSolomon:
         Returns:
             The values to subtract from the received word.
         """
-        return []
+
+        beta_j = [GF2m(0)] * self.delta
+        e_j  = [GF2m(0)] * self.delta
+        error_values = [GF2m(0)] * self.n
+
+        # compute the beta_{j_i} page 31 of the documentation
+        delta_counter = 0
+        for i in range(self.n):
+            found = 0
+            if error[i] != 0:
+                for j in range(self.delta):
+                    if j == delta_counter:
+                        beta_j[j] += GF2m(GF2m.gf_exp[i])
+                        found += 1
+        delta_real_value = delta_counter;
+
+        # Compute the e_{j_i} page 31 of the documentation
+        for i in range(self.delta):
+            tmp1 = GF2m(1)
+            tmp2 = GF2m(1)
+            inverse = beta_j[i].inverse()
+            inverse_power_j = GF2m(1)
+
+            for j in range(1, self.delta + 1):
+                inverse_power_j = inverse_power_j * inverse
+                tmp1 += inverse_power_j * z[j]
+            for k in range(1, self.delta):
+                tmp2 = tmp2 * (GF2m(1) + inverse * beta_j[(i + k) % self.delta])
+
+            if i - delta_real_value < 0:
+                e_j[i] = tmp1 * tmp2.inverse()
+
+        # Place the delta e_{j_i} values at the right coordinates of the output vector
+        delta_counter = 0;
+        for i in range(self.n):
+            found = 0
+            if error[i] != 0:
+                for j in range(self.delta):
+                    if j == delta_counter:
+                        error_values[i] += e_j[j]
+                        found += 1
+            delta_counter += found
+
+        return error_values
+
 
     def _correct_errors(self, encoded_data: bytes, error_values: List[GF2m]) -> bytes:
         """
@@ -285,4 +329,5 @@ class ReedSolomon:
 
         # 6. Correct the errors
         corrected_data = self._correct_errors(encoded_data, error_values)
+
         return corrected_data[:self.n]
