@@ -251,11 +251,11 @@ class ReedSolomon:
         delta_counter = 0
         for i in range(self.n):
             found = 0
-            if error[i] != 0:
-                for j in range(self.delta):
-                    if j == delta_counter:
-                        beta_j[j] += GF2m(GF2m.gf_exp[i])
-                        found += 1
+            for j in range(self.delta):
+                if error[i] != 0 and j == delta_counter:
+                    beta_j[j] += GF2m(GF2m.gf_exp[i])
+                    found += 1
+            delta_counter += found
         delta_real_value = delta_counter;
 
         # Compute the e_{j_i} page 31 of the documentation
