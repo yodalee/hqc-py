@@ -1,5 +1,6 @@
 
 from typing import List, Tuple
+from .fft import FFT
 from .GF2m import GF2m
 
 import math
@@ -184,7 +185,9 @@ class ReedSolomon:
         Returns:
             A list of error locations.
         """
-        return []
+        fft = FFT(self.n_fft)
+        w = fft.fft(sigma, len(sigma)) 
+        return fft.retrieve_error_poly(w)
 
     def _compute_z_poly(self, sigma: List[GF2m],  syndromes: List[GF2m]) -> List[GF2m]:
         """
