@@ -1,9 +1,12 @@
 
 from typing import List, Tuple
+import math
+import logging
+
 from .fft import FFT
 from .GF2m import GF2m
 
-import math
+logger = logging.getLogger(__name__)
 
 class ReedSolomon:
     def __init__(self, n: int, k: int, generator_polynomial: List[int]):
@@ -16,6 +19,17 @@ class ReedSolomon:
         self.g = n - k + 1
         self.delta = (n - k) // 2
         self.n_fft = math.ceil(math.log2(k))
+
+    def str_polynomial(self, poly: List[GF2m]) -> str:
+        l = []
+        for i, coef in enumerate(poly):
+            if int(coef) != 0:
+                l.append(f"{int(coef)}*x^{i}")
+        return " + ".join(l)
+
+    def str_listGF2m(self, lst: List[GF2m]) -> str:
+        return " ".join(str(int(coef)) for coef in lst)
+
 
     def compute_generator_polynomial(self) -> List[int]:
         """
@@ -313,23 +327,32 @@ class ReedSolomon:
             A byte array of size ``PARAM_K`` containing the decoded message.
         """
         assert len(encoded_data) == self.n, f"Encoded data length must be {self.n} bytes"
+        logging.debug(f"encoded_data: {encoded_data.hex()}")
+
         # 1. Compute the syndromes
         syndromes = self._compute_syndromes(encoded_data)
+        logging.debug("syndromes: %s", self.str_listGF2m(syndromes))
 
         # 2. Compute the error locator polynomial sigma
         # Sigma's degree is at most PARAM_DELTA but the FFT requires the extra room
         sigma = self._compute_elp(syndromes)
+        logging.debug("error-locator polynomial: %s", self.str_polynomial(sigma))
 
-        # 3. compute the error polynomial error
+        # 3. Compute the error polynomial error
         error = self._compute_roots(sigma)
 
         # 4. Compute the polynomial z(x)
         z = self._compute_z_poly(sigma, syndromes)
+        logging.debug("polynomial z(x): %s", self.str_polynomial(z))
+        logging.debug("error polynomial: %s", self.str_polynomial(error))
 
         # 5. Compute the error values
         error_values = self._compute_error_values(z, error)
+        s_error_values = [f"error_values[{i}]: {val.bits}" for i, val in enumerate(error_values) if val != 0]
+        logging.debug(f"error_values: {s_error_values}")
 
         # 6. Correct the errors
         corrected_data = self._correct_errors(encoded_data, error_values)
+        logging.debug(f"corrected_data {corrected_data.hex()}")
 
         return corrected_data[:self.n]
