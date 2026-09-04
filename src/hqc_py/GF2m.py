@@ -54,7 +54,7 @@ class GF2m:
         return self.bits.to_bytes((8 + 7) // 8, 'little')
 
     def __repr__(self) -> str:
-        return f"GF2m({bin(self.bits)[2:]})"
+        return f"{int(self.bits)}"
 
     def __int__(self) -> int:
         return self.bits
