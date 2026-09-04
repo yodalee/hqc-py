@@ -135,11 +135,12 @@ class FFT:
                 w[i]     = u[i] + (gammas_sums[i] * f1[0])
                 w[k + i] = w[i] + f1[0]
         else:
-            w[k:] = self._fft_recursive(f1, f_coeffs // 2, m - 1, m_f - 1, betas)
+            v = self._fft_recursive(f1, f_coeffs // 2, m - 1, m_f - 1, deltas)
+            w[k:] = v
             w[0] = u[0]
             w[k] += u[0]
             for i in range(1, k):
-                w[i]      = u[i] + (gammas_sums[i] * f1[0])
+                w[i]      = u[i] + (gammas_sums[i] * v[i])
                 w[k + i] += w[i]
         return w
 
