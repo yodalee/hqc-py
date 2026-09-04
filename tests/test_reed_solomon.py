@@ -193,9 +193,8 @@ class TestReedSolomon(unittest.TestCase):
                     corrupted[pos] = (~corrupted[pos]) & 0xFF
 
                 decoded = rs.decode(bytes(corrupted))
-                self.assertEqual(decoded[:rs.k], msg)
+                self.assertEqual(decoded[-rs.k:], msg)
 
-    @unittest.skip("decode is not implemented fully")
     def test_decode_error_correction_hqc1(self):
         self._assert_error_correction_for_level(self.rs1, iterations=5)
 
