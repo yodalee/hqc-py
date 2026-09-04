@@ -178,8 +178,6 @@ class GF2m:
         Raises:
             ValueError: If the element is zero.
         """
-        if self.bits == 0:
-            raise ValueError("Zero does not have a multiplicative inverse")
         a1 = self
         a2 = a1.square()
         a3 = a1 * a2
