@@ -94,9 +94,8 @@ class TestReedSolomon(unittest.TestCase):
             138, 250, 232, 39, 160, 60, 134, 118, 84, 145,
             220, 162, 245, 71, 180, 181, 95, 177, 208])
         golden = [1, 234]
-        degree, elp = self.rs1._compute_elp(syndromes)
-        self.assertEqual(degree, 1)
-        self.assertEqual(elp[:2], golden)
+        elp = self.rs1._compute_elp(syndromes)
+        self.assertTrue(equal_poly(elp, golden))
 
     def test_compute_syndrome_hqc3(self):
         cdw = bytes.fromhex(
@@ -127,8 +126,7 @@ class TestReedSolomon(unittest.TestCase):
             41, 179, 100, 86, 125, 205, 37, 185, 107, 208,
             184, 228, 150, 221, 61, 173, 117,193])
         golden = [1, 143]
-        degree, elp = self.rs5._compute_elp(syndromes)
-        self.assertEqual(degree, 1)
+        elp = self.rs5._compute_elp(syndromes)
         self.assertTrue(equal_poly(elp, golden))
 
     def test_compute_z_hqc1(self):
