@@ -198,11 +198,9 @@ class TestReedSolomon(unittest.TestCase):
     def test_decode_error_correction_hqc1(self):
         self._assert_error_correction_for_level(self.rs1, iterations=5)
 
-    @unittest.skip("decode is not implemented fully")
     def test_decode_error_correction_hqc3(self):
         self._assert_error_correction_for_level(self.rs3, iterations=5)
 
-    @unittest.skip("decode is not implemented fully")
     def test_decode_error_correction_hqc5(self):
         self._assert_error_correction_for_level(self.rs5, iterations=5)
 

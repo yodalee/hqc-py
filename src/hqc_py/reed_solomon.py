@@ -334,11 +334,13 @@ class ReedSolomon:
         logging.debug("syndromes: %s", self.str_listGF2m(syndromes))
 
         # 2. Compute the error locator polynomial sigma
-        # Sigma's degree is at most PARAM_DELTA but the FFT requires the extra room
         sigma = self._compute_elp(syndromes)
+
         logging.debug("error-locator polynomial: %s", self.str_polynomial(sigma))
 
         # 3. Compute the error polynomial error
+        # Sigma's degree is at most PARAM_DELTA but the FFT requires the extra room
+        sigma.extend([GF2m(0)] * ((1 << self.n_fft) - len(sigma)))
         error = self._compute_roots(sigma)
 
         # 4. Compute the polynomial z(x)
