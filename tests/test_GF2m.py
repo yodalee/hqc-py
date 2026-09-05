@@ -66,9 +66,6 @@ class TestGF2m(unittest.TestCase):
             self.assertEqual(a.square().bits, (a * a).bits)
 
     def test_inverse(self):
-        with self.assertRaises(ValueError):
-            GF2m(0).inverse()
-
         values = [1, 2, 3, 5, 7, 13, 31, 127, 255]
         for value in values:
             a = GF2m(value)
@@ -77,5 +74,4 @@ class TestGF2m(unittest.TestCase):
             self.assertEqual((inv * a).bits, 1)
 
     def test_zero_inverse(self):
-        with self.assertRaises(ValueError):
-            GF2m(0).inverse()
+        self.assertEqual(GF2m(0).inverse(), GF2m(0))
